@@ -16,7 +16,7 @@ Dieses Backend implementiert den vollständigen Server-Teil des Webshops in eine
 
 ```bash
 cd backend
-cp .env.example .env
+cp .env .env
 npm install
 ```
 

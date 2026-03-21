@@ -1,0 +1,115 @@
+import { Link, NavLink } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+
+function CartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
+      <circle cx="9" cy="20" r="1.5" />
+      <circle cx="18" cy="20" r="1.5" />
+      <path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7" />
+    </svg>
+  );
+}
+
+const navItems = [
+  { label: 'Home', to: '/' },
+  { label: 'Produkte', to: '/products' },
+  { label: 'Login / Register', to: '/auth' }
+];
+
+function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersicht', description, showHero = false }) {
+  const { cartCount, isCartLoading } = useCart();
+
+  return (
+    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink text-lg font-extrabold text-white">
+              IW
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">IDPA Webshop</p>
+              <h1 className="text-xl font-extrabold text-ink">{title}</h1>
+            </div>
+          </Link>
+
+          <nav className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-ink ${
+                    isActive ? 'bg-slate-100 text-ink' : ''
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+            <div className="ml-2 flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-ink">
+              <CartIcon />
+              <span>Warenkorb</span>
+              <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-coral px-2 py-0.5 text-xs font-bold text-white">
+                {isCartLoading ? '...' : cartCount}
+              </span>
+            </div>
+          </nav>
+        </div>
+
+        {showHero ? (
+          <div className="grid gap-4 rounded-3xl bg-gradient-to-r from-ink via-slate-900 to-brand p-5 text-white shadow-card lg:grid-cols-[1.4fr_1fr]">
+            <div className="space-y-3">
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-100">Willkommen im Shop</p>
+              <h2 className="max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">
+                Entdecke Produkte fuer deinen Alltag an einem Ort.
+              </h2>
+              <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
+                {description ||
+                  'Stoeber durch unser Sortiment, finde passende Produkte und wechsle bei Bedarf direkt zur Produktseite oder zum Login.'}
+              </p>
+              {feedback.message ? (
+                <div
+                  className={`inline-flex rounded-full px-4 py-2 text-sm font-medium ${
+                    feedback.type === 'success' ? 'bg-emerald-400/20 text-emerald-100' : 'bg-rose-400/20 text-rose-100'
+                  }`}
+                >
+                  {feedback.message}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="rounded-3xl bg-white/10 p-5 backdrop-blur-sm">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-semibold text-white">Kurz erklaert</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-200">
+                    Auf der Startseite bekommst du einen kurzen Ueberblick. Danach kannst du direkt zu den Produkten
+                    gehen oder dich anmelden.
+                  </p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Link
+                    to="/products"
+                    className="rounded-2xl bg-white px-4 py-3 text-center text-sm font-bold text-ink transition hover:bg-slate-100"
+                  >
+                    Zu den Produkten
+                  </Link>
+                  <Link
+                    to="/auth"
+                    className="rounded-2xl border border-white/20 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-white/10"
+                  >
+                    Login / Register
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </header>
+  );
+}
+
+export default Header;
