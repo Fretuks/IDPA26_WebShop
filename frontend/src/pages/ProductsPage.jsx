@@ -3,10 +3,12 @@ import Header from '../components/Header';
 import ProductGrid from '../components/ProductGrid';
 import Sidebar from '../components/Sidebar';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
 function ProductsPage() {
-  const { addToCart, cartError, token } = useCart();
+  const { addToCart, cartError } = useCart();
+  const { token } = useAuth();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,7 +90,7 @@ function ProductsPage() {
 
     try {
       await addToCart(product.id, 1);
-      setFeedback({ type: 'success', message: `${product.name} wurde dem Warenkorb hinzugefügt.` });
+      setFeedback({ type: 'success', message: `${product.name} wurde deinem Warenkorb hinzugefügt.` });
     } catch (error) {
       setFeedback({ type: 'error', message: error.message });
     } finally {
@@ -101,7 +103,7 @@ function ProductsPage() {
       <Header
         feedback={feedback}
         title="Produktübersicht"
-        description="Hier findest du alle Produkte im Shop. Nutze Suche und Kategorien, um schnell passende Artikel zu finden."
+        description="Entdecke unser Sortiment, filtere nach Kategorien und finde schnell die passenden Produkte."
       />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
@@ -119,22 +121,22 @@ function ProductsPage() {
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div className="space-y-2">
                   <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Katalog</p>
-                  <h2 className="text-2xl font-extrabold text-ink">Produkte entdecken</h2>
+                  <h2 className="text-2xl font-extrabold text-ink">Unsere Auswahl für dich</h2>
                   <p className="text-sm text-slate-500">
-                    {filteredProducts.length} Treffer {token ? 'mit aktivem Warenkorbzugriff' : 'ohne aktive Anmeldung'}
+                    {filteredProducts.length} Produkte {token ? 'mit aktivem Warenkorb' : 'als Gast'}
                   </p>
                 </div>
 
                 <div className="w-full max-w-xl">
                   <label htmlFor="search" className="mb-2 block text-sm font-medium text-slate-600">
-                    Suche
+                    Produkte suchen
                   </label>
                   <input
                     id="search"
                     type="search"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Nach Name, Beschreibung oder Kategorie suchen"
+                    placeholder="Suche nach Produktname, Beschreibung oder Kategorie"
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
                   />
                 </div>
@@ -143,7 +145,7 @@ function ProductsPage() {
 
             {pageError ? (
               <div className="rounded-[2rem] border border-rose-200 bg-rose-50 px-6 py-5 text-sm text-rose-700 shadow-card">
-                Fehler beim Laden der Shop-Daten: {pageError}
+                Die Produkte konnten gerade nicht geladen werden: {pageError}
               </div>
             ) : null}
 

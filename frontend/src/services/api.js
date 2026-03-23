@@ -32,10 +32,14 @@ async function request(path, options = {}) {
   const payload = contentType.includes('application/json') ? await response.json() : await response.text();
 
   if (!response.ok) {
-    const message =
-      typeof payload === 'object' && payload !== null
-        ? payload.error || payload.message || 'Request failed'
-        : 'Request failed';
+    let message = 'Request failed';
+
+    if (Array.isArray(payload?.errors) && payload.errors.length) {
+      message = payload.errors.map((item) => item.msg || item.message).filter(Boolean).join(', ');
+    } else if (typeof payload === 'object' && payload !== null) {
+      message = payload.error || payload.message || message;
+    }
+
     const error = new Error(message);
     error.status = response.status;
     error.payload = payload;
@@ -87,12 +91,42 @@ function mapCart(cart) {
   };
 }
 
+function mapUser(user) {
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    email: user.email,
+    phone: user.phone || '',
+    role: user.role,
+    createdAt: user.created_at,
+    defaultShippingAddressId: user.default_shipping_address_id ?? null,
+    defaultBillingAddressId: user.default_billing_address_id ?? null
+  };
+}
+
+function mapAuthPayload(payload) {
+  return {
+    token: payload.token,
+    user: mapUser(payload.user)
+  };
+}
+
 export const api = {
   baseUrl: API_BASE_URL,
 
   async getProducts() {
     const products = await request('/api/products');
     return products.map(mapProduct);
+  },
+
+  async getProductById(productId) {
+    const product = await request(`/api/products/${productId}`);
+    return mapProduct(product);
   },
 
   async getCategories() {
@@ -115,9 +149,33 @@ export const api = {
   },
 
   async login(email, password) {
-    return request('/api/auth/login', {
+    const payload = await request('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password })
+    });
+    return mapAuthPayload(payload);
+  },
+
+  async register(data) {
+    const user = await request('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        firstname: data.firstname,
+        lastname: data.lastname,
+        email: data.email,
+        password: data.password,
+        phone: data.phone || undefined
+      })
+    });
+
+    return mapUser(user);
+  },
+
+  async createAddress(address) {
+    return request('/api/users/me/addresses', {
+      method: 'POST',
+      auth: true,
+      body: JSON.stringify(address)
     });
   }
 };

@@ -1,14 +1,19 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import AuthPage from './pages/AuthPage';
 import OverviewPage from './pages/OverviewPage';
 import ProductsPage from './pages/ProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<OverviewPage />} />
       <Route path="/products" element={<ProductsPage />} />
-      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/products/:id" element={<ProductDetailPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/auth" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

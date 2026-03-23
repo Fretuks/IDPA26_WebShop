@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 function CartIcon() {
   return (
@@ -11,14 +12,22 @@ function CartIcon() {
   );
 }
 
-const navItems = [
-  { label: 'Home', to: '/' },
+const publicNavItems = [
+  { label: 'Startseite', to: '/' },
   { label: 'Produkte', to: '/products' },
-  { label: 'Login / Register', to: '/auth' }
+  { label: 'Anmelden', to: '/login' },
+  { label: 'Konto erstellen', to: '/register' }
 ];
 
-function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersicht', description, showHero = false }) {
-  const { cartCount, isCartLoading } = useCart();
+const authenticatedNavItems = [
+  { label: 'Startseite', to: '/' },
+  { label: 'Produkte', to: '/products' }
+];
+
+function Header({ feedback = { type: '', message: '' }, title = 'Produktübersicht', description, showHero = false }) {
+  const { count, isCartLoading } = useCart();
+  const { isAuthenticated, user, logout } = useAuth();
+  const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
@@ -34,28 +43,51 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersic
             </div>
           </Link>
 
-          <nav className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-ink ${
-                    isActive ? 'bg-slate-100 text-ink' : ''
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-            <div className="ml-2 flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-ink">
-              <CartIcon />
-              <span>Warenkorb</span>
-              <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-coral px-2 py-0.5 text-xs font-bold text-white">
-                {isCartLoading ? '...' : cartCount}
-              </span>
+          <div className="flex flex-col gap-3 lg:items-end">
+            <nav className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-ink ${
+                      isActive ? 'bg-slate-100 text-ink' : ''
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+              <div className="ml-2 flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-ink">
+                <CartIcon />
+                <span>Warenkorb</span>
+                <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-coral px-2 py-0.5 text-xs font-bold text-white">
+                  {isCartLoading ? '...' : count}
+                </span>
+              </div>
+            </nav>
+
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              {isAuthenticated ? (
+                <>
+                  <span className="rounded-full bg-emerald-50 px-4 py-2 font-medium text-emerald-700">
+                    {user?.firstname ? `Eingeloggt als ${user.firstname}` : 'Eingeloggt'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-700 transition hover:bg-slate-100"
+                  >
+                    Abmelden
+                  </button>
+                </>
+              ) : (
+                <span className="rounded-full bg-amber-50 px-4 py-2 font-medium text-amber-700">
+                  Nicht angemeldet
+                </span>
+              )}
             </div>
-          </nav>
+          </div>
         </div>
 
         {showHero ? (
@@ -63,11 +95,11 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersic
             <div className="space-y-3">
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-100">Willkommen im Shop</p>
               <h2 className="max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">
-                Entdecke Produkte fuer deinen Alltag an einem Ort.
+                Stilvolle Essentials und Lieblingsstücke für deinen Alltag.
               </h2>
               <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
                 {description ||
-                  'Stoeber durch unser Sortiment, finde passende Produkte und wechsle bei Bedarf direkt zur Produktseite oder zum Login.'}
+                  'Entdecke ausgewählte Produkte, sichere dir attraktive Angebote und lege deine Favoriten direkt in den Warenkorb.'}
               </p>
               {feedback.message ? (
                 <div
@@ -83,10 +115,10 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersic
             <div className="rounded-3xl bg-white/10 p-5 backdrop-blur-sm">
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-semibold text-white">Kurz erklaert</p>
+                  <p className="text-sm font-semibold text-white">Neu im Shop</p>
                   <p className="mt-2 text-sm leading-6 text-slate-200">
-                    Auf der Startseite bekommst du einen kurzen Ueberblick. Danach kannst du direkt zu den Produkten
-                    gehen oder dich anmelden.
+                    Entdecke aktuelle Produkte, stöbere durch Kategorien und sichere dir mit einem Kundenkonto ein
+                    noch bequemeres Einkaufserlebnis.
                   </p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -96,12 +128,22 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersic
                   >
                     Zu den Produkten
                   </Link>
-                  <Link
-                    to="/auth"
-                    className="rounded-2xl border border-white/20 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-white/10"
-                  >
-                    Login / Register
-                  </Link>
+                  {isAuthenticated ? (
+                    <button
+                      type="button"
+                      onClick={logout}
+                      className="rounded-2xl border border-white/20 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-white/10"
+                    >
+                      Abmelden
+                    </button>
+                  ) : (
+                    <Link
+                      to="/register"
+                      className="rounded-2xl border border-white/20 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-white/10"
+                    >
+                      Konto erstellen
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

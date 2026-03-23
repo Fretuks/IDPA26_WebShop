@@ -22,7 +22,7 @@ function ProductGrid({ products, isLoading, onAddToCart, activeProductId }) {
     return (
       <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-card">
         <p className="text-lg font-bold text-ink">Keine Produkte gefunden</p>
-        <p className="mt-2 text-sm text-slate-500">Passe Suche oder Kategorien an, um weitere Treffer zu sehen.</p>
+        <p className="mt-2 text-sm text-slate-500">Passe deine Suche oder die Filter an, um passende Artikel zu finden.</p>
       </div>
     );
   }

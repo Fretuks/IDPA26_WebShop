@@ -1,36 +1,17 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useAuth } from './AuthContext';
 import { api } from '../services/api';
 
 const CartContext = createContext(null);
 
-const TOKEN_KEY = 'webshop_token';
-const USER_KEY = 'webshop_user';
-
-function readStoredUser() {
-  const raw = localStorage.getItem(USER_KEY);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    localStorage.removeItem(USER_KEY);
-    return null;
-  }
-}
-
 export function CartProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
-  const [user, setUser] = useState(readStoredUser);
+  const { token, logout } = useAuth();
+  const [items, setItems] = useState([]);
   const [cart, setCart] = useState(null);
   const [isCartLoading, setIsCartLoading] = useState(false);
   const [cartError, setCartError] = useState('');
 
-  const cartCount = useMemo(
-    () => (cart?.items || []).reduce((sum, item) => sum + item.quantity, 0),
-    [cart]
-  );
+  const count = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
 
   useEffect(() => {
     let ignore = false;
@@ -38,6 +19,7 @@ export function CartProvider({ children }) {
     async function loadCart() {
       if (!token) {
         setCart(null);
+        setItems([]);
         setCartError('');
         return;
       }
@@ -49,11 +31,12 @@ export function CartProvider({ children }) {
         const nextCart = await api.getCart();
         if (!ignore) {
           setCart(nextCart);
+          setItems(nextCart.items || []);
         }
       } catch (error) {
         if (!ignore) {
           if (error.status === 401) {
-            clearAuthSession();
+            logout();
           }
           setCartError(error.message);
         }
@@ -68,43 +51,27 @@ export function CartProvider({ children }) {
     return () => {
       ignore = true;
     };
-  }, [token]);
-
-  function setAuthSession(payload) {
-    localStorage.setItem(TOKEN_KEY, payload.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(payload.user));
-    setToken(payload.token);
-    setUser(payload.user);
-  }
-
-  function clearAuthSession() {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    setToken(null);
-    setUser(null);
-    setCart(null);
-  }
+  }, [logout, token]);
 
   async function addToCart(productId, quantity = 1) {
     if (!token) {
-      throw new Error('Bitte zuerst einloggen, um Produkte in den Warenkorb zu legen.');
+      throw new Error('Bitte melde dich an, um Produkte in den Warenkorb zu legen.');
     }
 
     const nextCart = await api.addToCart(productId, quantity);
     setCart(nextCart);
+    setItems(nextCart.items || []);
+    setCartError('');
     return nextCart;
   }
 
   const value = {
-    token,
-    user,
+    items,
     cart,
-    cartCount,
-    cartError,
-    isCartLoading,
+    count,
     addToCart,
-    setAuthSession,
-    clearAuthSession
+    cartError,
+    isCartLoading
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -11,7 +11,7 @@ function Sidebar({ categories, selectedCategories, onCategoryToggle, onResetFilt
           onClick={onResetFilters}
           className="text-sm font-semibold text-slate-500 transition hover:text-ink"
         >
-          Reset
+          Zurücksetzen
         </button>
       </div>
 
@@ -42,13 +42,17 @@ function Sidebar({ categories, selectedCategories, onCategoryToggle, onResetFilt
                 />
                 <span>
                   <span className="block font-semibold">{category.name}</span>
-                  {category.description ? <span className="mt-1 block text-sm text-slate-500">{category.description}</span> : null}
+                  {category.description ? (
+                    <span className="mt-1 block text-sm text-slate-500">{category.description}</span>
+                  ) : null}
                 </span>
               </label>
             );
           })
         ) : (
-          <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">Keine Kategorien verfügbar.</p>
+          <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+            Derzeit sind keine Kategorien verfügbar.
+          </p>
         )}
       </div>
     </aside>
