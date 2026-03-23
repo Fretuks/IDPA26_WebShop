@@ -94,12 +94,9 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktübersic
           <div className="grid gap-4 rounded-3xl bg-gradient-to-r from-ink via-slate-900 to-brand p-5 text-white shadow-card lg:grid-cols-[1.4fr_1fr]">
             <div className="space-y-3">
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-100">Willkommen im Shop</p>
-              <h2 className="max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">
-                Stilvolle Essentials und Lieblingsstücke für deinen Alltag.
-              </h2>
+              <h2 className="max-w-xl text-3xl font-extrabold leading-tight sm:text-4xl">Einfach online einkaufen.</h2>
               <p className="max-w-2xl text-sm text-slate-200 sm:text-base">
-                {description ||
-                  'Entdecke ausgewählte Produkte, sichere dir attraktive Angebote und lege deine Favoriten direkt in den Warenkorb.'}
+                {description || 'Sieh dir unsere Produkte an und bestelle direkt im Shop.'}
               </p>
               {feedback.message ? (
                 <div
@@ -115,10 +112,9 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktübersic
             <div className="rounded-3xl bg-white/10 p-5 backdrop-blur-sm">
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-semibold text-white">Neu im Shop</p>
+                  <p className="text-sm font-semibold text-white">Schnell starten</p>
                   <p className="mt-2 text-sm leading-6 text-slate-200">
-                    Entdecke aktuelle Produkte, stöbere durch Kategorien und sichere dir mit einem Kundenkonto ein
-                    noch bequemeres Einkaufserlebnis.
+                    Du kannst direkt zu den Produkten gehen oder ein Konto erstellen.
                   </p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
