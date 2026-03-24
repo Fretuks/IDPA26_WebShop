@@ -12,6 +12,37 @@ export function CartProvider({ children }) {
   const [cartError, setCartError] = useState('');
 
   const count = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
+  const total = useMemo(() => Number(cart?.totalAmount || 0), [cart]);
+
+  function applyCart(nextCart) {
+    setCart(nextCart);
+    setItems(nextCart?.items || []);
+  }
+
+  async function fetchCart() {
+    if (!token) {
+      applyCart(null);
+      setCartError('');
+      return null;
+    }
+
+    setIsCartLoading(true);
+    setCartError('');
+
+    try {
+      const nextCart = await api.getCart();
+      applyCart(nextCart);
+      return nextCart;
+    } catch (error) {
+      if (error.status === 401) {
+        logout();
+      }
+      setCartError(error.message);
+      throw error;
+    } finally {
+      setIsCartLoading(false);
+    }
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -30,8 +61,7 @@ export function CartProvider({ children }) {
       try {
         const nextCart = await api.getCart();
         if (!ignore) {
-          setCart(nextCart);
-          setItems(nextCart.items || []);
+          applyCart(nextCart);
         }
       } catch (error) {
         if (!ignore) {
@@ -59,17 +89,40 @@ export function CartProvider({ children }) {
     }
 
     const nextCart = await api.addToCart(productId, quantity);
-    setCart(nextCart);
-    setItems(nextCart.items || []);
+    applyCart(nextCart);
     setCartError('');
     return nextCart;
+  }
+
+  async function updateItem(itemId, quantity) {
+    const nextCart = await api.updateCartItem(itemId, quantity);
+    applyCart(nextCart);
+    setCartError('');
+    return nextCart;
+  }
+
+  async function removeItem(itemId) {
+    const nextCart = await api.removeCartItem(itemId);
+    applyCart(nextCart);
+    setCartError('');
+    return nextCart;
+  }
+
+  function clearCart() {
+    applyCart(cart ? { ...cart, totalAmount: 0, items: [] } : null);
+    setCartError('');
   }
 
   const value = {
     items,
     cart,
     count,
+    total,
     addToCart,
+    updateItem,
+    removeItem,
+    clearCart,
+    fetchCart,
     cartError,
     isCartLoading
   };

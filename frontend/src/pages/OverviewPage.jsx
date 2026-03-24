@@ -19,6 +19,7 @@ const highlights = [
 function OverviewPage() {
   const location = useLocation();
   const addressNotice = location.state?.addressNotice || '';
+  const checkoutSuccess = location.state?.checkoutSuccess;
 
   return (
     <div className="min-h-screen">
@@ -32,6 +33,12 @@ function OverviewPage() {
         {addressNotice ? (
           <div className="mb-6 rounded-[1.75rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800 shadow-card">
             {addressNotice}
+          </div>
+        ) : null}
+
+        {checkoutSuccess ? (
+          <div className="mb-6 rounded-[1.75rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-700 shadow-card">
+            Deine Bestellung wurde erfolgreich übermittelt.
           </div>
         ) : null}
 

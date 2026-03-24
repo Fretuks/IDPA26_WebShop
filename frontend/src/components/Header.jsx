@@ -58,13 +58,16 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktübersic
                   {item.label}
                 </NavLink>
               ))}
-              <div className="ml-2 flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-ink">
+              <Link
+                to={isAuthenticated ? '/cart' : '/login'}
+                className="ml-2 flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-ink transition hover:bg-slate-100"
+              >
                 <CartIcon />
                 <span>Warenkorb</span>
                 <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-coral px-2 py-0.5 text-xs font-bold text-white">
                   {isCartLoading ? '...' : count}
                 </span>
-              </div>
+              </Link>
             </nav>
 
             <div className="flex flex-wrap items-center gap-3 text-sm">

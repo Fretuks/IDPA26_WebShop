@@ -86,7 +86,46 @@ function mapCart(cart) {
       name: item.name,
       price: Number(item.price),
       stock: Number(item.stock ?? 0),
-      active: item.active
+      active: item.active,
+      imageUrl: item.image_url || null
+    }))
+  };
+}
+
+function mapAddress(address) {
+  return {
+    id: address.id,
+    userId: address.user_id,
+    street: address.street,
+    houseNumber: address.house_number,
+    zip: address.zip,
+    city: address.city,
+    country: address.country,
+    createdAt: address.created_at
+  };
+}
+
+function mapAddressPayload(payload) {
+  return {
+    defaultShippingAddressId: payload.defaultShippingAddressId ?? null,
+    defaultBillingAddressId: payload.defaultBillingAddressId ?? null,
+    addresses: (payload.addresses || []).map(mapAddress)
+  };
+}
+
+function mapOrder(order) {
+  return {
+    ...order,
+    totalAmount: Number(order.total_amount ?? order.totalAmount ?? 0),
+    paymentMethod: order.payment_method ?? order.paymentMethod ?? '',
+    status: order.status,
+    shippingAddressSnapshot: order.shipping_address_snapshot ?? order.shippingAddressSnapshot ?? null,
+    billingAddressSnapshot: order.billing_address_snapshot ?? order.billingAddressSnapshot ?? null,
+    items: (order.items || []).map((item) => ({
+      ...item,
+      quantity: Number(item.quantity),
+      priceAtPurchase: Number(item.price_at_purchase ?? item.priceAtPurchase ?? 0),
+      productId: item.product_id ?? item.productId
     }))
   };
 }
@@ -148,6 +187,23 @@ export const api = {
     return mapCart(cart);
   },
 
+  async updateCartItem(itemId, quantity) {
+    const cart = await request(`/api/cart/items/${itemId}`, {
+      method: 'PUT',
+      auth: true,
+      body: JSON.stringify({ quantity })
+    });
+    return mapCart(cart);
+  },
+
+  async removeCartItem(itemId) {
+    const cart = await request(`/api/cart/items/${itemId}`, {
+      method: 'DELETE',
+      auth: true
+    });
+    return mapCart(cart);
+  },
+
   async login(email, password) {
     const payload = await request('/api/auth/login', {
       method: 'POST',
@@ -172,10 +228,41 @@ export const api = {
   },
 
   async createAddress(address) {
-    return request('/api/users/me/addresses', {
+    const payload = await request('/api/users/me/addresses', {
       method: 'POST',
       auth: true,
       body: JSON.stringify(address)
     });
+
+    return mapAddress(payload);
+  },
+
+  async getMyAddresses() {
+    const payload = await request('/api/users/me/addresses', { auth: true });
+    return mapAddressPayload(payload);
+  },
+
+  async setDefaultShippingAddress(addressId) {
+    return request(`/api/users/me/default-shipping/${addressId}`, {
+      method: 'PATCH',
+      auth: true
+    });
+  },
+
+  async setDefaultBillingAddress(addressId) {
+    return request(`/api/users/me/default-billing/${addressId}`, {
+      method: 'PATCH',
+      auth: true
+    });
+  },
+
+  async checkout(payload) {
+    const order = await request('/api/orders/checkout', {
+      method: 'POST',
+      auth: true,
+      body: JSON.stringify(payload)
+    });
+
+    return mapOrder(order);
   }
 };
