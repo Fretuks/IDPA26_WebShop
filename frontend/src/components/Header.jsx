@@ -21,10 +21,11 @@ const publicNavItems = [
 
 const authenticatedNavItems = [
   { label: 'Startseite', to: '/' },
-  { label: 'Produkte', to: '/products' }
+  { label: 'Produkte', to: '/products' },
+  { label: 'Einstellungen', to: '/settings' }
 ];
 
-function Header({ feedback = { type: '', message: '' }, title = 'Produktübersicht', description, showHero = false }) {
+function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersicht', description, showHero = false }) {
   const { count, isCartLoading } = useCart();
   const { isAuthenticated, user, logout } = useAuth();
   const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;

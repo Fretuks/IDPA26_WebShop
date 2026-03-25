@@ -42,7 +42,7 @@ function ProductCard({ product, onAddToCart, isAdding }) {
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Preis</p>
             <p className="text-2xl font-extrabold text-ink">{formatPrice(product.price)}</p>

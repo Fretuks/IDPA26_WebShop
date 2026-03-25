@@ -36,6 +36,8 @@ async function request(path, options = {}) {
 
     if (Array.isArray(payload?.errors) && payload.errors.length) {
       message = payload.errors.map((item) => item.msg || item.message).filter(Boolean).join(', ');
+    } else if (Array.isArray(payload?.details) && payload.details.length) {
+      message = payload.details.map((item) => item.msg || item.message).filter(Boolean).join(', ');
     } else if (typeof payload === 'object' && payload !== null) {
       message = payload.error || payload.message || message;
     }
@@ -220,11 +222,34 @@ export const api = {
         lastname: data.lastname,
         email: data.email,
         password: data.password,
-        phone: data.phone || undefined
+        phone: data.phone || undefined,
+        address: data.address
       })
     });
 
     return mapUser(user);
+  },
+
+  async getMe() {
+    const user = await request('/api/users/me', { auth: true });
+    return mapUser(user);
+  },
+
+  async updateMe(data) {
+    const user = await request('/api/users/me', {
+      method: 'PATCH',
+      auth: true,
+      body: JSON.stringify(data)
+    });
+    return mapUser(user);
+  },
+
+  async changePassword(data) {
+    await request('/api/users/me/password', {
+      method: 'PATCH',
+      auth: true,
+      body: JSON.stringify(data)
+    });
   },
 
   async createAddress(address) {
@@ -235,6 +260,23 @@ export const api = {
     });
 
     return mapAddress(payload);
+  },
+
+  async updateAddress(addressId, address) {
+    const payload = await request(`/api/users/me/addresses/${addressId}`, {
+      method: 'PUT',
+      auth: true,
+      body: JSON.stringify(address)
+    });
+
+    return mapAddress(payload);
+  },
+
+  async deleteAddress(addressId) {
+    await request(`/api/users/me/addresses/${addressId}`, {
+      method: 'DELETE',
+      auth: true
+    });
   },
 
   async getMyAddresses() {

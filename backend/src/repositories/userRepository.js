@@ -28,6 +28,31 @@ module.exports = {
     return rows[0] || null;
   },
 
+  async updateProfile(id, { firstname, lastname, phone }) {
+    const { rows } = await db.query(
+      `UPDATE users
+       SET firstname = $1,
+           lastname = $2,
+           phone = $3
+       WHERE id = $4
+       RETURNING id, firstname, lastname, email, phone, role, created_at,
+                 default_shipping_address_id, default_billing_address_id`,
+      [firstname, lastname, phone, id]
+    );
+    return rows[0] || null;
+  },
+
+  async updatePasswordHash(id, passwordHash) {
+    const { rows } = await db.query(
+      `UPDATE users
+       SET password_hash = $1
+       WHERE id = $2
+       RETURNING id`,
+      [passwordHash, id]
+    );
+    return rows[0] || null;
+  },
+
   async setDefaultShippingAddress(userId, addressId) {
     const { rows } = await db.query(
       'UPDATE users SET default_shipping_address_id = $1 WHERE id = $2 RETURNING *',

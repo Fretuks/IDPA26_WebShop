@@ -4,6 +4,21 @@ const AppError = require('../utils/AppError');
 const userRepository = require('../repositories/userRepository');
 const env = require('../config/env');
 const { UserRole } = require('../models/enums');
+const addressRepository = require('../repositories/addressRepository');
+
+function mapUser(user) {
+  return {
+    id: user.id,
+    firstname: user.firstname,
+    lastname: user.lastname,
+    email: user.email,
+    phone: user.phone || null,
+    role: user.role,
+    created_at: user.created_at,
+    default_shipping_address_id: user.default_shipping_address_id ?? null,
+    default_billing_address_id: user.default_billing_address_id ?? null
+  };
+}
 
 module.exports = {
   async register(payload) {
@@ -22,7 +37,21 @@ module.exports = {
       role: UserRole.CUSTOMER
     });
 
-    return user;
+    const address = await addressRepository.create({
+      userId: user.id,
+      street: payload.address.street,
+      houseNumber: payload.address.houseNumber,
+      zip: payload.address.zip,
+      city: payload.address.city,
+      country: payload.address.country
+    });
+
+    await Promise.all([
+      userRepository.setDefaultShippingAddress(user.id, address.id),
+      userRepository.setDefaultBillingAddress(user.id, address.id)
+    ]);
+
+    return userRepository.findById(user.id);
   },
 
   async login(email, password) {
@@ -42,13 +71,7 @@ module.exports = {
 
     return {
       token,
-      user: {
-        id: user.id,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-        role: user.role
-      }
+      user: mapUser(user)
     };
   }
 };

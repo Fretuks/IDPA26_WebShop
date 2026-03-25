@@ -48,13 +48,19 @@ export function AuthProvider({ children }) {
     await api.register(formData);
     const payload = await api.login(formData.email, formData.password);
     persistSession(payload);
-
-    if (formData.address?.trim()) {
-      payload.addressNotice =
-        'Der eingegebene Adresshinweis wurde nicht gespeichert, weil das Backend dafür strukturierte Adressfelder verlangt.';
-    }
-
     return payload;
+  }
+
+  async function refreshUser() {
+    const freshUser = await api.getMe();
+    localStorage.setItem(USER_KEY, JSON.stringify(freshUser));
+    setUser(freshUser);
+    return freshUser;
+  }
+
+  function updateStoredUser(nextUser) {
+    localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+    setUser(nextUser);
   }
 
   const value = useMemo(
@@ -65,7 +71,9 @@ export function AuthProvider({ children }) {
       login,
       logout: clearSession,
       register,
-      setSession: persistSession
+      refreshUser,
+      setSession: persistSession,
+      updateStoredUser
     }),
     [token, user]
   );

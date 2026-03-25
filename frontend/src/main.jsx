@@ -4,7 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import './index.css';
+// Fuer die Demo kannst du hier auf './style-sunrise.css' oder './style-ocean.css' wechseln.
+import './style-moon.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
