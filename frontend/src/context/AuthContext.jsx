@@ -6,6 +6,11 @@ const AuthContext = createContext(null);
 const TOKEN_KEY = 'webshop_token';
 const USER_KEY = 'webshop_user';
 
+const USER_ROLE = Object.freeze({
+  CUSTOMER: 'CUSTOMER',
+  ADMIN: 'ADMIN'
+});
+
 function readStoredUser() {
   const raw = localStorage.getItem(USER_KEY);
   if (!raw) {
@@ -63,11 +68,23 @@ export function AuthProvider({ children }) {
     setUser(nextUser);
   }
 
+  function hasRole(role) {
+    return user?.role === role;
+  }
+
+  function hasAnyRole(roles) {
+    return roles.includes(user?.role);
+  }
+
   const value = useMemo(
     () => ({
       user,
       token,
+      roles: USER_ROLE,
       isAuthenticated: Boolean(token),
+      hasRole,
+      hasAnyRole,
+      isAdmin: hasRole(USER_ROLE.ADMIN),
       login,
       logout: clearSession,
       register,

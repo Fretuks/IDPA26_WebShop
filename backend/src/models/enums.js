@@ -3,6 +3,10 @@ const UserRole = Object.freeze({
   ADMIN: 'ADMIN'
 });
 
+function isUserRole(value) {
+  return Object.values(UserRole).includes(value);
+}
+
 const PaymentMethod = Object.freeze({
   INVOICE: 'INVOICE',
   CREDIT_CARD: 'CREDIT_CARD',
@@ -17,6 +21,7 @@ const OrderStatus = Object.freeze({
 
 module.exports = {
   UserRole,
+  isUserRole,
   PaymentMethod,
   OrderStatus
 };

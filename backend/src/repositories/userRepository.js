@@ -1,7 +1,8 @@
 const db = require('../config/db');
+const { UserRole } = require('../models/enums');
 
 module.exports = {
-  async create({ firstname, lastname, email, passwordHash, role = 'CUSTOMER', phone = null }) {
+  async create({ firstname, lastname, email, passwordHash, role = UserRole.CUSTOMER, phone = null }) {
     const query = `
       INSERT INTO users (firstname, lastname, email, password_hash, role, phone)
       VALUES ($1, $2, $3, $4, $5, $6)
