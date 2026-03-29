@@ -3,6 +3,10 @@ const productRepository = require('../repositories/productRepository');
 const categoryRepository = require('../repositories/categoryRepository');
 
 module.exports = {
+  getAllAdmin() {
+    return productRepository.findAll();
+  },
+
   getAllActive() {
     return productRepository.findAllActive();
   },

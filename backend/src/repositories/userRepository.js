@@ -29,6 +29,16 @@ module.exports = {
     return rows[0] || null;
   },
 
+  async findAll() {
+    const { rows } = await db.query(
+      `SELECT id, firstname, lastname, email, phone, role, created_at,
+              default_shipping_address_id, default_billing_address_id
+       FROM users
+       ORDER BY created_at DESC`
+    );
+    return rows;
+  },
+
   async updateProfile(id, { firstname, lastname, phone }) {
     const { rows } = await db.query(
       `UPDATE users

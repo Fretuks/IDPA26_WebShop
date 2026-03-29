@@ -27,8 +27,10 @@ const authenticatedNavItems = [
 
 function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersicht', description, showHero = false }) {
   const { count, isCartLoading } = useCart();
-  const { isAuthenticated, user, logout } = useAuth();
-  const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const navItems = isAuthenticated
+    ? [...authenticatedNavItems, ...(isAdmin ? [{ label: 'Admin', to: '/admin' }] : [])]
+    : publicNavItems;
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">

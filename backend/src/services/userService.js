@@ -4,6 +4,10 @@ const env = require('../config/env');
 const userRepository = require('../repositories/userRepository');
 
 module.exports = {
+  getAllAdmin() {
+    return userRepository.findAll();
+  },
+
   async getById(userId) {
     const user = await userRepository.findById(userId);
     if (!user) {

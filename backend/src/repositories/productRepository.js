@@ -1,6 +1,17 @@
 const db = require('../config/db');
 
 module.exports = {
+  async findAll() {
+    const query = `
+      SELECT p.*, c.name AS category_name
+      FROM products p
+      JOIN categories c ON c.id = p.category_id
+      ORDER BY p.created_at DESC
+    `;
+    const { rows } = await db.query(query);
+    return rows;
+  },
+
   async findAllActive() {
     const query = `
       SELECT p.*, c.name AS category_name

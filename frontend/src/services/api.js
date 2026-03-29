@@ -58,7 +58,7 @@ function mapProduct(product) {
     description: product.description || '',
     price: Number(product.price),
     stock: Number(product.stock ?? 0),
-    categoryId: product.category_id,
+    categoryId: product.category_id ?? product.categoryId,
     categoryName: product.category_name || '',
     active: product.active,
     createdAt: product.created_at,
@@ -118,6 +118,12 @@ function mapAddressPayload(payload) {
 function mapOrder(order) {
   return {
     ...order,
+    id: order.id,
+    userId: order.user_id ?? order.userId,
+    firstname: order.firstname || '',
+    lastname: order.lastname || '',
+    email: order.email || '',
+    createdAt: order.created_at ?? order.createdAt ?? null,
     totalAmount: Number(order.total_amount ?? order.totalAmount ?? 0),
     paymentMethod: order.payment_method ?? order.paymentMethod ?? '',
     status: order.status,
@@ -165,6 +171,11 @@ export const api = {
     return products.map(mapProduct);
   },
 
+  async getAdminProducts() {
+    const products = await request('/api/admin/products', { auth: true });
+    return products.map(mapProduct);
+  },
+
   async getProductById(productId) {
     const product = await request(`/api/products/${productId}`);
     return mapProduct(product);
@@ -173,6 +184,56 @@ export const api = {
   async getCategories() {
     const categories = await request('/api/categories');
     return categories.map(mapCategory);
+  },
+
+  async createCategory(data) {
+    const category = await request('/api/categories', {
+      method: 'POST',
+      auth: true,
+      body: JSON.stringify(data)
+    });
+    return mapCategory(category);
+  },
+
+  async updateCategory(categoryId, data) {
+    const category = await request(`/api/categories/${categoryId}`, {
+      method: 'PUT',
+      auth: true,
+      body: JSON.stringify(data)
+    });
+    return mapCategory(category);
+  },
+
+  async deleteCategory(categoryId) {
+    await request(`/api/categories/${categoryId}`, {
+      method: 'DELETE',
+      auth: true
+    });
+  },
+
+  async createProduct(data) {
+    const product = await request('/api/products', {
+      method: 'POST',
+      auth: true,
+      body: JSON.stringify(data)
+    });
+    return mapProduct(product);
+  },
+
+  async updateProduct(productId, data) {
+    const product = await request(`/api/products/${productId}`, {
+      method: 'PUT',
+      auth: true,
+      body: JSON.stringify(data)
+    });
+    return mapProduct(product);
+  },
+
+  async deleteProduct(productId) {
+    await request(`/api/products/${productId}`, {
+      method: 'DELETE',
+      auth: true
+    });
   },
 
   async getCart() {
@@ -306,5 +367,15 @@ export const api = {
     });
 
     return mapOrder(order);
+  },
+
+  async getAdminOrders() {
+    const orders = await request('/api/admin/orders', { auth: true });
+    return orders.map(mapOrder);
+  },
+
+  async getAdminUsers() {
+    const users = await request('/api/admin/users', { auth: true });
+    return users.map(mapUser);
   }
 };
