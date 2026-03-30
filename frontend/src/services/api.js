@@ -374,8 +374,26 @@ export const api = {
     return orders.map(mapOrder);
   },
 
+  async updateAdminOrderStatus(orderId, status) {
+    const order = await request(`/api/admin/orders/${orderId}/status`, {
+      method: 'PATCH',
+      auth: true,
+      body: JSON.stringify({ status })
+    });
+    return mapOrder(order);
+  },
+
   async getAdminUsers() {
     const users = await request('/api/admin/users', { auth: true });
     return users.map(mapUser);
+  },
+
+  async updateAdminUserRole(userId, role) {
+    const user = await request(`/api/admin/users/${userId}/role`, {
+      method: 'PATCH',
+      auth: true,
+      body: JSON.stringify({ role })
+    });
+    return mapUser(user);
   }
 };

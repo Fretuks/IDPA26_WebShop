@@ -16,12 +16,19 @@ const PaymentMethod = Object.freeze({
 const OrderStatus = Object.freeze({
   OPEN: 'OPEN',
   PAID: 'PAID',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
   CANCELLED: 'CANCELLED'
 });
+
+function isOrderStatus(value) {
+  return Object.values(OrderStatus).includes(value);
+}
 
 module.exports = {
   UserRole,
   isUserRole,
   PaymentMethod,
-  OrderStatus
+  OrderStatus,
+  isOrderStatus
 };

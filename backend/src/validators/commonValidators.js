@@ -1,5 +1,5 @@
 const { body, param } = require('express-validator');
-const { PaymentMethod } = require('../models/enums');
+const { PaymentMethod, OrderStatus, UserRole } = require('../models/enums');
 
 const idParamValidator = [param('id').isInt({ min: 1 }).withMessage('Invalid id')];
 const addressIdParamValidator = [param('addressId').isInt({ min: 1 }).withMessage('Invalid addressId')];
@@ -34,6 +34,18 @@ const checkoutValidator = [
   body('billingAddressId').optional().isInt({ min: 1 }).withMessage('billingAddressId must be a positive integer')
 ];
 
+const orderStatusValidator = [
+  body('status')
+    .isIn(Object.values(OrderStatus))
+    .withMessage(`Status must be one of: ${Object.values(OrderStatus).join(', ')}`)
+];
+
+const userRoleValidator = [
+  body('role')
+    .isIn(Object.values(UserRole))
+    .withMessage(`Role must be one of: ${Object.values(UserRole).join(', ')}`)
+];
+
 const addressValidator = [
   body('street').trim().notEmpty().withMessage('street is required'),
   body('houseNumber').trim().notEmpty().withMessage('houseNumber is required'),
@@ -59,5 +71,7 @@ module.exports = {
   addCartItemValidator,
   updateCartItemValidator,
   checkoutValidator,
-  addressValidator
+  addressValidator,
+  orderStatusValidator,
+  userRoleValidator
 };

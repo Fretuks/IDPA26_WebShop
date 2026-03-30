@@ -66,5 +66,16 @@ module.exports = {
     `;
     const { rows } = await db.query(query, [orderId]);
     return rows;
+  },
+
+  async updateStatus(orderId, status) {
+    const { rows } = await db.query(
+      `UPDATE orders
+       SET status = $1
+       WHERE id = $2
+       RETURNING *`,
+      [status, orderId]
+    );
+    return rows[0] || null;
   }
 };

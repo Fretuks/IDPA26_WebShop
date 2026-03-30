@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const AppError = require('../utils/AppError');
 const env = require('../config/env');
 const userRepository = require('../repositories/userRepository');
+const { UserRole } = require('../models/enums');
 
 module.exports = {
   getAllAdmin() {
@@ -48,5 +49,23 @@ module.exports = {
 
     const passwordHash = await bcrypt.hash(newPassword, env.bcryptRounds);
     await userRepository.updatePasswordHash(userId, passwordHash);
+  },
+
+  async updateRole(userId, role, actorUserId) {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    if (Number(actorUserId) === Number(userId) && role !== UserRole.ADMIN) {
+      throw new AppError('You cannot remove your own admin role', 400);
+    }
+
+    const updatedUser = await userRepository.updateRole(userId, role);
+    if (!updatedUser) {
+      throw new AppError('User not found', 404);
+    }
+
+    return updatedUser;
   }
 };

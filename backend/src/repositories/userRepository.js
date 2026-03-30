@@ -64,6 +64,18 @@ module.exports = {
     return rows[0] || null;
   },
 
+  async updateRole(id, role) {
+    const { rows } = await db.query(
+      `UPDATE users
+       SET role = $1
+       WHERE id = $2
+       RETURNING id, firstname, lastname, email, phone, role, created_at,
+                 default_shipping_address_id, default_billing_address_id`,
+      [role, id]
+    );
+    return rows[0] || null;
+  },
+
   async setDefaultShippingAddress(userId, addressId) {
     const { rows } = await db.query(
       'UPDATE users SET default_shipping_address_id = $1 WHERE id = $2 RETURNING *',

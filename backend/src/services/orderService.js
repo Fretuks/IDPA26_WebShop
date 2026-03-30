@@ -119,5 +119,13 @@ module.exports = {
 
   async getAllOrdersAdmin() {
     return orderRepository.findAll();
+  },
+
+  async updateStatus(orderId, status) {
+    const updatedOrder = await orderRepository.updateStatus(orderId, status);
+    if (!updatedOrder) {
+      throw new AppError('Order not found', 404);
+    }
+    return updatedOrder;
   }
 };
