@@ -17,7 +17,7 @@ function ProductEditModal({ categories, draft, onChange, onSubmit, onClose, isSa
             disabled={isSaving}
             className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Schliessen
+            Zurück zur Liste
           </button>
         </div>
 
@@ -92,7 +92,7 @@ function ProductEditModal({ categories, draft, onChange, onSubmit, onClose, isSa
                 required
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-brand focus:bg-white"
               >
-                <option value="">Kategorie waehlen</option>
+                <option value="">Kategorie wählen</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}

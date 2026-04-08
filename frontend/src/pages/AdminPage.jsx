@@ -17,6 +17,13 @@ const defaultCategoryDraft = {
 
 const validSections = new Set(['dashboard', 'products', 'categories', 'orders', 'users', 'settings']);
 
+const productSortOptions = [
+  { value: 'name-asc', label: 'Name A-Z' },
+  { value: 'name-desc', label: 'Name Z-A' },
+  { value: 'price-asc', label: 'Preis aufsteigend' },
+  { value: 'price-desc', label: 'Preis absteigend' }
+];
+
 function AdminPage() {
   const { isAuthenticated, isAdmin, user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,6 +43,10 @@ function AdminPage() {
   const [isSavingCategory, setIsSavingCategory] = useState(false);
   const [savingOrderId, setSavingOrderId] = useState(null);
   const [savingUserId, setSavingUserId] = useState(null);
+  const [productSearch, setProductSearch] = useState('');
+  const [productCategoryFilter, setProductCategoryFilter] = useState('all');
+  const [productStatusFilter, setProductStatusFilter] = useState('all');
+  const [productSort, setProductSort] = useState('name-asc');
 
   const activeSection = validSections.has(searchParams.get('section')) ? searchParams.get('section') : 'dashboard';
 
@@ -93,6 +104,39 @@ function AdminPage() {
     }),
     [products.length, categories.length, orders.length, users.length]
   );
+
+  const filteredProducts = useMemo(() => {
+    const query = productSearch.trim().toLowerCase();
+    const nextProducts = products.filter((product) => {
+      const matchesQuery =
+        !query ||
+        product.name.toLowerCase().includes(query) ||
+        product.categoryName.toLowerCase().includes(query);
+      const matchesCategory =
+        productCategoryFilter === 'all' || String(product.categoryId) === productCategoryFilter;
+      const matchesStatus =
+        productStatusFilter === 'all' ||
+        (productStatusFilter === 'active' ? product.active : !product.active);
+
+      return matchesQuery && matchesCategory && matchesStatus;
+    });
+
+    nextProducts.sort((left, right) => {
+      switch (productSort) {
+        case 'name-desc':
+          return right.name.localeCompare(left.name, 'de', { sensitivity: 'base' });
+        case 'price-asc':
+          return left.price - right.price;
+        case 'price-desc':
+          return right.price - left.price;
+        case 'name-asc':
+        default:
+          return left.name.localeCompare(right.name, 'de', { sensitivity: 'base' });
+      }
+    });
+
+    return nextProducts;
+  }, [productCategoryFilter, productSearch, productSort, productStatusFilter, products]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: '/admin' }} />;
@@ -169,7 +213,9 @@ function AdminPage() {
       if (editingProduct) {
         const savedProduct = await api.updateProduct(editingProduct.id, payload);
         const categoryName = categories.find((category) => category.id === savedProduct.categoryId)?.name || savedProduct.categoryName;
-        setProducts((current) => current.map((product) => (product.id === editingProduct.id ? { ...savedProduct, categoryName } : product)));
+        setProducts((current) =>
+          current.map((product) => (product.id === editingProduct.id ? { ...savedProduct, categoryName } : product))
+        );
         setFeedback('Produkt wurde aktualisiert.');
       } else {
         const savedProduct = await api.createProduct(payload);
@@ -272,7 +318,7 @@ function AdminPage() {
     try {
       const updatedOrder = await api.updateAdminOrderStatus(order.id, status);
       setOrders((current) => current.map((entry) => (entry.id === order.id ? { ...entry, ...updatedOrder } : entry)));
-      setFeedback(`Bestellstatus fuer Bestellung #${order.id} wurde gespeichert.`);
+      setFeedback(`Bestellstatus für Bestellung #${order.id} wurde gespeichert.`);
     } catch (updateError) {
       setError(updateError.message);
     } finally {
@@ -291,7 +337,7 @@ function AdminPage() {
     try {
       const updatedUser = await api.updateAdminUserRole(selectedUser.id, role);
       setUsers((current) => current.map((entry) => (entry.id === selectedUser.id ? updatedUser : entry)));
-      setFeedback(`Rolle fuer ${selectedUser.firstname} ${selectedUser.lastname} wurde gespeichert.`);
+      setFeedback(`Rolle für ${selectedUser.firstname} ${selectedUser.lastname} wurde gespeichert.`);
     } catch (updateError) {
       setError(updateError.message);
     } finally {
@@ -329,6 +375,124 @@ function AdminPage() {
     );
   }
 
+  function renderProductSection() {
+    return (
+      <div className="grid gap-6">
+        <ProductForm
+          categories={categories}
+          draft={productDraft}
+          onChange={updateProductDraft}
+          onSubmit={handleProductSubmit}
+          onCancel={cancelProductEdit}
+          isSaving={isSavingProduct}
+          editingProduct={null}
+        />
+
+        <div className="rounded-[1.75rem] border border-slate-200/80 bg-white p-6 shadow-card">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Produktliste</p>
+              <h3 className="mt-2 text-2xl font-extrabold text-ink">Suchen und filtern</h3>
+              <p className="mt-2 text-sm text-slate-500">
+                {filteredProducts.length} von {products.length} Produkten sichtbar
+              </p>
+            </div>
+
+            {editingProduct ? (
+              <button
+                type="button"
+                onClick={cancelProductEdit}
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                Zurück zur Liste
+              </button>
+            ) : null}
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="xl:col-span-2">
+              <label htmlFor="admin-product-search" className="mb-2 block text-sm font-semibold text-slate-700">
+                Suche nach Name oder Kategorie
+              </label>
+              <input
+                id="admin-product-search"
+                type="search"
+                value={productSearch}
+                onChange={(event) => setProductSearch(event.target.value)}
+                placeholder="Produktname oder Kategorie"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="admin-product-category" className="mb-2 block text-sm font-semibold text-slate-700">
+                Kategorie
+              </label>
+              <select
+                id="admin-product-category"
+                value={productCategoryFilter}
+                onChange={(event) => setProductCategoryFilter(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
+              >
+                <option value="all">Alle Kategorien</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={String(category.id)}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="admin-product-status" className="mb-2 block text-sm font-semibold text-slate-700">
+                Status
+              </label>
+              <select
+                id="admin-product-status"
+                value={productStatusFilter}
+                onChange={(event) => setProductStatusFilter(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
+              >
+                <option value="all">Alle</option>
+                <option value="active">Aktiv</option>
+                <option value="inactive">Inaktiv</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="admin-product-sort" className="mb-2 block text-sm font-semibold text-slate-700">
+                Sortierung
+              </label>
+              <select
+                id="admin-product-sort"
+                value={productSort}
+                onChange={(event) => setProductSort(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
+              >
+                {productSortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <ProductTable products={filteredProducts} onEdit={startProductEdit} onDelete={handleDeleteProduct} />
+        <ProductEditModal
+          categories={categories}
+          draft={editingProductDraft}
+          onChange={updateEditingProductDraft}
+          onSubmit={handleProductSubmit}
+          onClose={cancelProductEdit}
+          isSaving={isSavingProduct}
+          isOpen={Boolean(editingProduct)}
+        />
+      </div>
+    );
+  }
+
   function renderContent() {
     if (isLoading) {
       return (
@@ -341,29 +505,7 @@ function AdminPage() {
 
     switch (activeSection) {
       case 'products':
-        return (
-          <div className="grid gap-6">
-            <ProductForm
-              categories={categories}
-              draft={productDraft}
-              onChange={updateProductDraft}
-              onSubmit={handleProductSubmit}
-              onCancel={cancelProductEdit}
-              isSaving={isSavingProduct}
-              editingProduct={null}
-            />
-            <ProductTable products={products} onEdit={startProductEdit} onDelete={handleDeleteProduct} />
-            <ProductEditModal
-              categories={categories}
-              draft={editingProductDraft}
-              onChange={updateEditingProductDraft}
-              onSubmit={handleProductSubmit}
-              onClose={cancelProductEdit}
-              isSaving={isSavingProduct}
-              isOpen={Boolean(editingProduct)}
-            />
-          </div>
-        );
+        return renderProductSection();
       case 'categories':
         return (
           <CategoryTable

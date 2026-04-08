@@ -5,6 +5,13 @@ import Sidebar from '../components/Sidebar';
 import { useCart } from '../context/CartContext';
 import { api } from '../services/api';
 
+const sortOptions = [
+  { value: 'price-asc', label: 'Preis aufsteigend' },
+  { value: 'price-desc', label: 'Preis absteigend' },
+  { value: 'name-asc', label: 'Name A-Z' },
+  { value: 'name-desc', label: 'Name Z-A' }
+];
+
 function ProductsPage() {
   const { addToCart, cartError } = useCart();
   const [products, setProducts] = useState([]);
@@ -14,6 +21,8 @@ function ProductsPage() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [onlyInStock, setOnlyInStock] = useState(false);
+  const [sortOption, setSortOption] = useState('price-asc');
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
@@ -81,16 +90,36 @@ function ProductsPage() {
     });
   }, [products, searchTerm, selectedCategories, minPrice, maxPrice, onlyInStock]);
 
+  const sortedProducts = useMemo(() => {
+    const nextProducts = [...filteredProducts];
+
+    nextProducts.sort((left, right) => {
+      switch (sortOption) {
+        case 'price-desc':
+          return right.price - left.price;
+        case 'name-asc':
+          return left.name.localeCompare(right.name, 'de', { sensitivity: 'base' });
+        case 'name-desc':
+          return right.name.localeCompare(left.name, 'de', { sensitivity: 'base' });
+        case 'price-asc':
+        default:
+          return left.price - right.price;
+      }
+    });
+
+    return nextProducts;
+  }, [filteredProducts, sortOption]);
+
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategories, minPrice, maxPrice, onlyInStock, pageSize]);
+  }, [searchTerm, selectedCategories, minPrice, maxPrice, onlyInStock, pageSize, sortOption]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(sortedProducts.length / pageSize));
 
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
-    return filteredProducts.slice(startIndex, startIndex + pageSize);
-  }, [currentPage, filteredProducts, pageSize]);
+    return sortedProducts.slice(startIndex, startIndex + pageSize);
+  }, [currentPage, sortedProducts, pageSize]);
 
   const pageNumbers = useMemo(() => {
     const start = Math.max(1, currentPage - 2);
@@ -98,6 +127,8 @@ function ProductsPage() {
     const adjustedStart = Math.max(1, end - 4);
     return Array.from({ length: end - adjustedStart + 1 }, (_, index) => adjustedStart + index);
   }, [currentPage, totalPages]);
+
+  const activeFilterCount = selectedCategories.length + (minPrice ? 1 : 0) + (maxPrice ? 1 : 0) + (onlyInStock ? 1 : 0);
 
   function handleCategoryToggle(categoryId) {
     setSelectedCategories((current) =>
@@ -111,6 +142,7 @@ function ProductsPage() {
     setMinPrice('');
     setMaxPrice('');
     setOnlyInStock(false);
+    setSortOption('price-asc');
   }
 
   async function handleAddToCart(product) {
@@ -132,7 +164,7 @@ function ProductsPage() {
       <Header
         feedback={feedback}
         title="Produktübersicht"
-        description="Entdecke unser Sortiment, filtere nach Kategorien und finde schnell die passenden Produkte."
+        description="Entdecke unser Sortiment, kombiniere Suche, Kategorien und Filter und finde schneller passende Produkte."
       />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
@@ -149,32 +181,92 @@ function ProductsPage() {
             onMaxPriceChange={setMaxPrice}
             onOnlyInStockChange={setOnlyInStock}
             isLoading={isCategoriesLoading}
+            className="hidden lg:block"
           />
 
           <div className="space-y-6">
-            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-card">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Katalog</p>
-                  <h2 className="text-2xl font-extrabold text-ink">Unsere Auswahl für dich</h2>
-                  <p className="text-sm text-slate-500">{filteredProducts.length} Produkte</p>
+            <div className="sticky top-4 z-20 rounded-[2rem] border border-slate-200/80 bg-white/95 p-5 shadow-card backdrop-blur">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Katalog</p>
+                    <h2 className="text-2xl font-extrabold text-ink">Suchen, filtern, direkt vergleichen</h2>
+                    <p className="text-sm text-slate-500">
+                      {sortedProducts.length} Produkte gefunden
+                      {activeFilterCount > 0 ? ` | ${activeFilterCount} Filter aktiv` : ''}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 lg:hidden">
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileFiltersOpen((current) => !current)}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      {isMobileFiltersOpen ? 'Filter schliessen' : `Filter ${activeFilterCount ? `(${activeFilterCount})` : ''}`}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResetFilters}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Zurücksetzen
+                    </button>
+                  </div>
                 </div>
 
-                <div className="w-full max-w-xl">
-                  <label htmlFor="search" className="mb-2 block text-sm font-medium text-slate-600">
-                    Produkte suchen
-                  </label>
-                  <input
-                    id="search"
-                    type="search"
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Suche nach Produktname, Beschreibung oder Kategorie"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
-                  />
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
+                  <div>
+                    <label htmlFor="search" className="mb-2 block text-sm font-medium text-slate-600">
+                      Produkte suchen
+                    </label>
+                    <input
+                      id="search"
+                      type="search"
+                      value={searchTerm}
+                      onChange={(event) => setSearchTerm(event.target.value)}
+                      placeholder="Produktname, Beschreibung oder Kategorie"
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="sort" className="mb-2 block text-sm font-medium text-slate-600">
+                      Sortierung
+                    </label>
+                    <select
+                      id="sort"
+                      value={sortOption}
+                      onChange={(event) => setSortOption(event.target.value)}
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-ink outline-none transition focus:border-brand focus:bg-white"
+                    >
+                      {sortOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {isMobileFiltersOpen ? (
+              <Sidebar
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onCategoryToggle={handleCategoryToggle}
+                onResetFilters={handleResetFilters}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                onlyInStock={onlyInStock}
+                onMinPriceChange={setMinPrice}
+                onMaxPriceChange={setMaxPrice}
+                onOnlyInStockChange={setOnlyInStock}
+                isLoading={isCategoriesLoading}
+                className="lg:hidden"
+              />
+            ) : null}
 
             {pageError ? (
               <div className="rounded-[2rem] border border-rose-200 bg-rose-50 px-6 py-5 text-sm text-rose-700 shadow-card">
@@ -189,13 +281,13 @@ function ProductsPage() {
               activeProductId={activeProductId}
             />
 
-            {!isProductsLoading && filteredProducts.length > 0 ? (
+            {!isProductsLoading && sortedProducts.length > 0 ? (
               <div className="rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-card">
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                   <p className="text-sm text-slate-500">
                     Seite {currentPage} von {totalPages} |{' '}
-                    {Math.min((currentPage - 1) * pageSize + 1, filteredProducts.length)}-
-                    {Math.min(currentPage * pageSize, filteredProducts.length)} von {filteredProducts.length}
+                    {Math.min((currentPage - 1) * pageSize + 1, sortedProducts.length)}-
+                    {Math.min(currentPage * pageSize, sortedProducts.length)} von {sortedProducts.length}
                   </p>
 
                   <div className="flex flex-wrap items-center gap-3">

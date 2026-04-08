@@ -18,7 +18,7 @@ test('validatePhone accepts optional empty input', () => {
 });
 
 test('validatePhone rejects malformed numbers', () => {
-  assert.equal(validatePhone('abc'), 'Bitte gib eine gueltige Telefonnummer ein.');
+  assert.equal(validatePhone('abc'), 'Bitte gib eine gültige Telefonnummer ein.');
 });
 
 test('validateAddress requires street and house number when partially filled', () => {
@@ -40,7 +40,7 @@ test('validateAddress normalizes and accepts a valid address', () => {
       street: ' Bahnhofstrasse ',
       houseNumber: ' 12A ',
       zip: ' 8001 ',
-      city: ' Zuerich ',
+      city: ' Zürich ',
       country: ' ch '
     }),
     ''
@@ -53,14 +53,14 @@ test('normalizeAddress trims fields and uppercases country', () => {
       street: ' Bahnhofstrasse ',
       houseNumber: ' 12A ',
       zip: ' 8001 ',
-      city: ' Zuerich ',
+      city: ' Zürich ',
       country: ' ch '
     }),
     {
       street: 'Bahnhofstrasse',
       houseNumber: '12A',
       zip: '8001',
-      city: 'Zuerich',
+      city: 'Zürich',
       country: 'CH'
     }
   );

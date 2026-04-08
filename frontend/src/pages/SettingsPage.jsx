@@ -163,7 +163,7 @@ function SettingsPage() {
     }
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setError('Neues Passwort und Bestaetigung stimmen nicht ueberein.');
+      setError('Neues Passwort und Bestätigung stimmen nicht überein.');
       return;
     }
 
@@ -221,7 +221,7 @@ function SettingsPage() {
           }));
         }
 
-        setAddressMessage('Adresse wurde hinzugefuegt.');
+        setAddressMessage('Adresse wurde hinzugefügt.');
       }
 
       resetAddressEditor();
@@ -276,7 +276,7 @@ function SettingsPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="mb-6">
           <Link to="/" className="text-sm font-semibold text-brand transition hover:text-ink">
-            Zurueck zur Startseite
+            Zurück zur Startseite
           </Link>
         </div>
 
@@ -292,7 +292,7 @@ function SettingsPage() {
           <section className="grid gap-6 lg:grid-cols-2">
             <form onSubmit={handleProfileSubmit} className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-card sm:p-8">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Profil</p>
-              <h2 className="mt-3 text-2xl font-extrabold text-ink">Persoenliche Daten</h2>
+              <h2 className="mt-3 text-2xl font-extrabold text-ink">Persönliche Daten</h2>
               <div className="mt-6 grid gap-5">
                 <div>
                   <label htmlFor="firstname" className="mb-2 block text-sm font-semibold text-slate-700">
@@ -343,7 +343,7 @@ function SettingsPage() {
 
             <form onSubmit={handlePasswordSubmit} className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-card sm:p-8">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Sicherheit</p>
-              <h2 className="mt-3 text-2xl font-extrabold text-ink">Passwort aendern</h2>
+              <h2 className="mt-3 text-2xl font-extrabold text-ink">Passwort ändern</h2>
               <div className="mt-6 grid gap-5">
                 <div>
                   <label htmlFor="currentPassword" className="mb-2 block text-sm font-semibold text-slate-700">
@@ -375,7 +375,7 @@ function SettingsPage() {
                 </div>
                 <div>
                   <label htmlFor="confirmPassword" className="mb-2 block text-sm font-semibold text-slate-700">
-                    Neues Passwort bestaetigen
+                    Neues Passwort bestätigen
                   </label>
                   <input
                     id="confirmPassword"
@@ -454,7 +454,7 @@ function SettingsPage() {
                             onClick={() => handleDeleteAddress(address.id)}
                             className="rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                           >
-                            Loeschen
+                            Löschen
                           </button>
                         </div>
                       </div>
@@ -527,7 +527,7 @@ function SettingsPage() {
                     </div>
                   </div>
                   <button type="submit" className="mt-6 w-full rounded-2xl bg-ink px-5 py-4 text-sm font-bold text-white transition hover:bg-brand">
-                    {editingAddressId ? 'Adresse speichern' : 'Adresse hinzufuegen'}
+                    {editingAddressId ? 'Adresse speichern' : 'Adresse hinzufügen'}
                   </button>
                 </form>
               </div>

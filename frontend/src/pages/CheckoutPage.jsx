@@ -5,8 +5,7 @@ import OrderSummary from '../components/OrderSummary';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { api } from '../services/api';
-
-const SHIPPING_COST = 0;
+import { calculateShipping, getFreeShippingRemaining } from '../utils/shipping';
 
 const initialAddressForm = {
   firstname: '',
@@ -36,9 +35,10 @@ function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [addressFeedback, setAddressFeedback] = useState('');
   const [addressBook, setAddressBook] = useState({ addresses: [], defaultShippingAddressId: null, defaultBillingAddressId: null });
   const [selectedAddressId, setSelectedAddressId] = useState('');
-  const [useNewAddress, setUseNewAddress] = useState(false);
+  const [addressMode, setAddressMode] = useState('list');
   const [paymentMethod, setPaymentMethod] = useState('INVOICE');
   const [addressForm, setAddressForm] = useState(() => ({
     ...initialAddressForm,
@@ -80,7 +80,7 @@ function CheckoutPage() {
           '';
 
         setSelectedAddressId(preferredAddressId ? String(preferredAddressId) : '');
-        setUseNewAddress(addressPayload.addresses.length === 0);
+        setAddressMode(addressPayload.addresses.length === 0 ? 'new' : 'list');
 
         if (!cartPayload?.items?.length) {
           setError('Dein Warenkorb ist leer. Füge zuerst Produkte hinzu.');
@@ -104,7 +104,13 @@ function CheckoutPage() {
   }, [isAuthenticated]);
 
   const subtotal = useMemo(() => total, [total]);
-  const grandTotal = subtotal + SHIPPING_COST;
+  const shippingCost = useMemo(() => calculateShipping(subtotal), [subtotal]);
+  const freeShippingRemaining = useMemo(() => getFreeShippingRemaining(subtotal), [subtotal]);
+  const shippingMessage =
+    freeShippingRemaining > 0
+      ? `Noch CHF ${freeShippingRemaining.toFixed(2)} bis kostenloser Versand`
+      : 'Kostenloser Versand ist aktiviert.';
+  const grandTotal = subtotal + shippingCost;
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: '/checkout' }} />;
@@ -123,7 +129,7 @@ function CheckoutPage() {
       return 'Bitte wähle eine Zahlungsmethode.';
     }
 
-    if (useNewAddress) {
+    if (addressMode === 'new') {
       if (!addressForm.firstname.trim() || !addressForm.lastname.trim()) {
         return 'Vorname und Nachname sind Pflichtfelder.';
       }
@@ -150,7 +156,7 @@ function CheckoutPage() {
   }
 
   async function ensureCheckoutAddress() {
-    if (!useNewAddress) {
+    if (addressMode !== 'new') {
       return Number(selectedAddressId);
     }
 
@@ -173,6 +179,8 @@ function CheckoutPage() {
       defaultBillingAddressId: newAddress.id
     }));
     setSelectedAddressId(String(newAddress.id));
+    setAddressMode('list');
+    setAddressFeedback('Neue Adresse gespeichert und automatisch ausgewählt.');
 
     return newAddress.id;
   }
@@ -253,56 +261,95 @@ function CheckoutPage() {
                   <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Lieferdaten</p>
                   <h2 className="mt-3 text-3xl font-extrabold text-ink">Checkout</h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setUseNewAddress((current) => !current)}
-                  disabled={!addressBook.addresses.length && useNewAddress}
-                  className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {useNewAddress
-                    ? addressBook.addresses.length
-                      ? 'Gespeicherte Adresse wählen'
-                      : 'Neue Adresse erforderlich'
-                    : 'Neue Adresse erfassen'}
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  {addressMode === 'new' && addressBook.addresses.length ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddressMode('list');
+                        setAddressFeedback('');
+                      }}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Zurück zur Adressliste
+                    </button>
+                  ) : null}
+                  {addressMode !== 'new' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddressMode('new');
+                        setAddressFeedback('');
+                      }}
+                      className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Neue Adresse hinzufügen
+                    </button>
+                  ) : null}
+                </div>
               </div>
 
-              {!useNewAddress && addressBook.addresses.length ? (
-                <div className="mt-8 space-y-3">
-                  <p className="text-sm font-semibold text-slate-700">Gespeicherte Adresse</p>
-                  {addressBook.addresses.map((address) => (
-                    <label
-                      key={address.id}
-                      className={`flex cursor-pointer items-start gap-3 rounded-[1.5rem] border px-4 py-4 transition ${
-                        selectedAddressId === String(address.id)
-                          ? 'border-brand bg-teal-50'
-                          : 'border-slate-200 bg-slate-50 hover:border-slate-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="saved-address"
-                        value={address.id}
-                        checked={selectedAddressId === String(address.id)}
-                        onChange={(event) => setSelectedAddressId(event.target.value)}
-                        className="mt-1 h-4 w-4 accent-brand"
-                      />
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-ink">{getAddressLabel(address)}</p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          {addressBook.defaultShippingAddressId === address.id ? 'Standard Versand' : ''}
-                          {addressBook.defaultShippingAddressId === address.id && addressBook.defaultBillingAddressId === address.id
-                            ? ' | '
-                            : ''}
-                          {addressBook.defaultBillingAddressId === address.id ? 'Standard Rechnung' : ''}
-                        </p>
-                      </div>
-                    </label>
-                  ))}
+              {addressFeedback ? (
+                <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-700">
+                  {addressFeedback}
                 </div>
               ) : null}
 
-              {useNewAddress ? (
+              {addressMode === 'list' && addressBook.addresses.length ? (
+                <div className="mt-8 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-700">Gespeicherte Adressen</p>
+                    <p className="text-sm text-slate-500">{addressBook.addresses.length} verfügbar</p>
+                  </div>
+
+                  <div className="grid gap-4">
+                    {addressBook.addresses.map((address) => {
+                      const isSelected = selectedAddressId === String(address.id);
+
+                      return (
+                        <article
+                          key={address.id}
+                          className={`rounded-[1.5rem] border px-4 py-4 transition ${
+                            isSelected
+                              ? 'border-brand bg-teal-50'
+                              : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-ink">{getAddressLabel(address)}</p>
+                              <p className="mt-2 text-xs text-slate-500">
+                                {addressBook.defaultShippingAddressId === address.id ? 'Standard Versand' : ''}
+                                {addressBook.defaultShippingAddressId === address.id && addressBook.defaultBillingAddressId === address.id
+                                  ? ' | '
+                                  : ''}
+                                {addressBook.defaultBillingAddressId === address.id ? 'Standard Rechnung' : ''}
+                              </p>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedAddressId(String(address.id));
+                                setAddressFeedback('Adresse ausgewählt.');
+                              }}
+                              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                                isSelected
+                                  ? 'bg-ink text-white'
+                                  : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
+                              }`}
+                            >
+                              {isSelected ? 'Ausgewählt' : 'Adresse auswählen'}
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
+
+              {addressMode === 'new' ? (
                 <div className="mt-8 grid gap-5 sm:grid-cols-2">
                   <div>
                     <label htmlFor="firstname" className="mb-2 block text-sm font-semibold text-slate-700">
@@ -419,14 +466,14 @@ function CheckoutPage() {
               <OrderSummary
                 items={items}
                 subtotal={subtotal}
-                shipping={SHIPPING_COST}
+                shipping={shippingCost}
                 total={grandTotal}
+                shippingMessage={shippingMessage}
                 buttonLabel="Bestellung abschliessen"
                 buttonType="submit"
                 buttonDisabled={isSubmitting || !items.length}
                 isSubmitting={isSubmitting}
                 formId="checkout-form"
-                note="Produkte und Mengen kommen direkt aus dem Backend-Warenkorb. Beim Abschluss wird eine Bestellung über `/api/orders/checkout` erstellt."
               />
             </div>
           </section>

@@ -9,6 +9,14 @@ required.forEach((key) => {
   }
 });
 
+function parseBoolean(value, defaultValue = false) {
+  if (value === undefined) {
+    return defaultValue;
+  }
+
+  return ['1', 'true', 'yes', 'on'].includes(String(value).trim().toLowerCase());
+}
+
 module.exports = {
   port: Number(process.env.PORT || 3000),
   db: {
@@ -16,7 +24,8 @@ module.exports = {
     port: Number(process.env.DB_PORT),
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
+    password: process.env.DB_PASSWORD,
+    ssl: parseBoolean(process.env.DB_SSL)
   },
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '12h',

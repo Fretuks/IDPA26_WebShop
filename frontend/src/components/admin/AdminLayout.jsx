@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 function MetricCard({ label, value, hint }) {
@@ -22,6 +23,12 @@ function AdminLayout({ activeSection, onSectionChange, user, stats, children }) 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
                 Verwalte Produkte, Kategorien, Bestellungen und Benutzer mit der bestehenden REST-API.
               </p>
+              <Link
+                to="/"
+                className="mt-4 inline-flex rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                Zurück zur Startseite
+              </Link>
             </div>
 
             <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-700">

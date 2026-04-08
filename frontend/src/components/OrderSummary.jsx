@@ -18,6 +18,7 @@ function OrderSummary({
   isSubmitting = false,
   compact = false,
   note = '',
+  shippingMessage = '',
   formId
 }) {
   return (
@@ -60,6 +61,9 @@ function OrderSummary({
           <span>Gesamt</span>
           <span>{formatPrice(total)}</span>
         </div>
+        {shippingMessage ? (
+          <p className="rounded-2xl bg-white px-3 py-3 text-sm font-medium text-brand">{shippingMessage}</p>
+        ) : null}
       </div>
 
       {note ? <p className="mt-4 text-sm leading-6 text-slate-500">{note}</p> : null}

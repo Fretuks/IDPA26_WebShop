@@ -1,6 +1,10 @@
 function StatusBadge({ active }) {
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-200 text-slate-700'}`}>
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+        active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-200 text-slate-700'
+      }`}
+    >
       {active ? 'Aktiv' : 'Inaktiv'}
     </span>
   );
@@ -12,6 +16,9 @@ function ProductTable({ products, onEdit, onDelete }) {
       <div className="border-b border-slate-200 px-6 py-5">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Produkte</p>
         <h3 className="mt-2 text-2xl font-extrabold text-ink">Produktverwaltung</h3>
+        <p className="mt-2 text-sm text-slate-500">
+          Suche, Filter und Sortierung reduzieren Klicks für die tägliche Pflege.
+        </p>
       </div>
 
       <div className="overflow-x-auto">
@@ -19,7 +26,7 @@ function ProductTable({ products, onEdit, onDelete }) {
           <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             <tr>
               <th className="px-6 py-4">ID</th>
-              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">Produkt</th>
               <th className="px-6 py-4">Kategorie</th>
               <th className="px-6 py-4">Preis</th>
               <th className="px-6 py-4">Lager</th>
@@ -33,7 +40,9 @@ function ProductTable({ products, onEdit, onDelete }) {
                 <td className="px-6 py-4 font-semibold text-slate-500">{product.id}</td>
                 <td className="px-6 py-4">
                   <p className="font-semibold text-ink">{product.name}</p>
-                  <p className="mt-1 max-w-md text-xs leading-5 text-slate-500">{product.description || 'Keine Beschreibung'}</p>
+                  <p className="mt-1 max-w-md text-xs leading-5 text-slate-500">
+                    {product.description || 'Keine Beschreibung'}
+                  </p>
                 </td>
                 <td className="px-6 py-4 text-slate-600">{product.categoryName || '-'}</td>
                 <td className="px-6 py-4 font-semibold text-ink">CHF {product.price.toFixed(2)}</td>
@@ -48,14 +57,14 @@ function ProductTable({ products, onEdit, onDelete }) {
                       onClick={() => onEdit(product)}
                       className="rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
-                      Edit
+                      Bearbeiten
                     </button>
                     <button
                       type="button"
                       onClick={() => onDelete(product)}
                       className="rounded-full border border-rose-200 px-4 py-2 font-semibold text-rose-700 transition hover:bg-rose-50"
                     >
-                      Delete
+                      Löschen
                     </button>
                   </div>
                 </td>

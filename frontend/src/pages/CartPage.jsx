@@ -5,8 +5,7 @@ import Header from '../components/Header';
 import OrderSummary from '../components/OrderSummary';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-
-const SHIPPING_COST = 0;
+import { calculateShipping, getFreeShippingRemaining } from '../utils/shipping';
 
 function CartPage() {
   const navigate = useNavigate();
@@ -36,7 +35,13 @@ function CartPage() {
   }, [items]);
 
   const subtotal = useMemo(() => total, [total]);
-  const grandTotal = subtotal + SHIPPING_COST;
+  const shippingCost = useMemo(() => calculateShipping(subtotal), [subtotal]);
+  const freeShippingRemaining = useMemo(() => getFreeShippingRemaining(subtotal), [subtotal]);
+  const shippingMessage =
+    freeShippingRemaining > 0
+      ? `Noch CHF ${freeShippingRemaining.toFixed(2)} bis kostenloser Versand`
+      : 'Kostenloser Versand ist aktiviert.';
+  const grandTotal = subtotal + shippingCost;
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: '/cart' }} />;
@@ -162,8 +167,9 @@ function CartPage() {
               <OrderSummary
                 items={items}
                 subtotal={subtotal}
-                shipping={SHIPPING_COST}
+                shipping={shippingCost}
                 total={grandTotal}
+                shippingMessage={shippingMessage}
                 buttonLabel="Zur Kasse gehen"
                 onButtonClick={() => navigate('/checkout')}
                 note="Die finale Bestellung wird erst auf der Checkout-Seite abgeschickt."

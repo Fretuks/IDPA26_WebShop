@@ -18,7 +18,7 @@ export function validatePhone(phone, { required = false } = {}) {
   }
 
   if (!phoneRegex.test(normalized)) {
-    return 'Bitte gib eine gueltige Telefonnummer ein.';
+    return 'Bitte gib eine gültige Telefonnummer ein.';
   }
 
   return '';
@@ -40,7 +40,7 @@ export function validateAddress(address, { required = true } = {}) {
   }
 
   if (!zipRegex.test(zip)) {
-    return 'Bitte gib eine gueltige PLZ ein.';
+    return 'Bitte gib eine gültige PLZ ein.';
   }
 
   if (!city) {
@@ -48,7 +48,7 @@ export function validateAddress(address, { required = true } = {}) {
   }
 
   if (!countryRegex.test(country)) {
-    return 'Bitte gib einen zweistelligen Laendercode ein, z.B. CH.';
+    return 'Bitte gib einen zweistelligen Ländercode ein, z.B. CH.';
   }
 
   return '';

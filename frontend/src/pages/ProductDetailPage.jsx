@@ -66,6 +66,16 @@ function ProductDetailPage() {
     ];
   }, [product]);
 
+  const shortInfo = useMemo(() => {
+    if (!product?.description) {
+      return 'Zu diesem Artikel liegt aktuell keine Kurzinfo vor.';
+    }
+
+    return product.description.length > 180
+      ? `${product.description.slice(0, 177).trim()}...`
+      : product.description;
+  }, [product]);
+
   async function handleSubmit(event) {
     event.preventDefault();
     setFeedback({ type: '', message: '' });
@@ -118,7 +128,7 @@ function ProductDetailPage() {
             <p className="mt-3 text-sm">{error}</p>
           </section>
         ) : (
-          <section className="space-y-8">
+          <section>
             <div className="grid gap-8 rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-card lg:grid-cols-[1.05fr_0.95fr]">
               <div className="overflow-hidden rounded-[1.75rem] bg-slate-100">
                 <img
@@ -138,9 +148,11 @@ function ProductDetailPage() {
                   </div>
 
                   <p className="text-3xl font-extrabold text-ink">{formatPrice(product.price)}</p>
-                  <p className="text-base leading-7 text-slate-600">
-                    {product.description || 'Zu diesem Artikel liegt aktuell keine ausführliche Beschreibung vor.'}
-                  </p>
+
+                  <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Kurzinfo</p>
+                    <p className="mt-2 text-base leading-7 text-slate-600">{shortInfo}</p>
+                  </div>
 
                   <div className="flex flex-wrap gap-3">
                     {specs.map((item) => (
@@ -190,32 +202,6 @@ function ProductDetailPage() {
                 </form>
               </div>
             </div>
-
-            <section className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-card">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Details</p>
-              <h3 className="mt-3 text-2xl font-extrabold text-ink">Beschreibung und Spezifikationen</h3>
-              <div className="mt-5 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                <div className="rounded-[1.75rem] bg-slate-50 p-5">
-                  <p className="text-sm leading-7 text-slate-600">
-                    {product.description ||
-                      'Zu diesem Artikel sind derzeit nur die wichtigsten Produktinformationen verfügbar.'}
-                  </p>
-                </div>
-                <div className="rounded-[1.75rem] bg-slate-50 p-5">
-                  <dl className="space-y-3">
-                    {specs.map((item) => (
-                      <div
-                        key={item.label}
-                        className="flex items-center justify-between gap-4 border-b border-slate-200 pb-3 last:border-b-0 last:pb-0"
-                      >
-                        <dt className="text-sm text-slate-500">{item.label}</dt>
-                        <dd className="text-sm font-semibold text-ink">{item.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              </div>
-            </section>
           </section>
         )}
       </main>
