@@ -1,4 +1,5 @@
-import { Link, NavLink } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,9 +29,32 @@ const authenticatedNavItems = [
 function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersicht', description, showHero = false }) {
   const { count, isCartLoading } = useCart();
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [searchInput, setSearchInput] = useState('');
   const navItems = isAuthenticated
     ? [...authenticatedNavItems, ...(isAdmin ? [{ label: 'Admin', to: '/admin' }] : [])]
     : publicNavItems;
+
+  useEffect(() => {
+    if (location.pathname === '/products') {
+      setSearchInput(searchParams.get('q') ?? '');
+      return;
+    }
+
+    setSearchInput('');
+  }, [location.pathname, searchParams]);
+
+  function handleSearchSubmit(event) {
+    event.preventDefault();
+
+    const query = searchInput.trim();
+    navigate({
+      pathname: '/products',
+      search: query ? `?q=${encodeURIComponent(query)}` : ''
+    });
+  }
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
@@ -46,7 +70,30 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersic
             </div>
           </Link>
 
-          <div className="flex flex-col gap-3 lg:items-end">
+          <div className="flex flex-col gap-3 lg:min-w-0 lg:flex-1 lg:items-end">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex w-full max-w-2xl flex-col gap-2 sm:flex-row sm:items-center lg:justify-end"
+            >
+              <label htmlFor="global-product-search" className="sr-only">
+                Produkte suchen
+              </label>
+              <input
+                id="global-product-search"
+                type="search"
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Produkte suchen"
+                className="w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white sm:flex-1"
+              />
+              <button
+                type="submit"
+                className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand"
+              >
+                Suchen
+              </button>
+            </form>
+
             <nav className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600">
               {navItems.map((item) => (
                 <NavLink
