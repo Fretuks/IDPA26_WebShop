@@ -21,6 +21,23 @@ test('validatePhone rejects malformed numbers', () => {
   assert.equal(validatePhone('abc'), 'Bitte gib eine gültige Telefonnummer ein.');
 });
 
+test('validatePhone enforces required phone input', () => {
+  assert.equal(validatePhone('   ', { required: true }), 'Bitte gib eine Telefonnummer ein.');
+});
+
+test('validateAddress rejects an entirely empty required address', () => {
+  assert.equal(
+    validateAddress({
+      street: '',
+      houseNumber: '',
+      zip: '',
+      city: '',
+      country: ''
+    }),
+    'Bitte gib eine Adresse ein.'
+  );
+});
+
 test('validateAddress requires street and house number when partially filled', () => {
   assert.equal(
     validateAddress({
@@ -44,6 +61,19 @@ test('validateAddress normalizes and accepts a valid address', () => {
       country: ' ch '
     }),
     ''
+  );
+});
+
+test('validateAddress rejects invalid country codes', () => {
+  assert.equal(
+    validateAddress({
+      street: 'Bahnhofstrasse',
+      houseNumber: '12A',
+      zip: '8001',
+      city: 'Zürich',
+      country: 'Switzerland'
+    }),
+    'Bitte gib einen zweistelligen Ländercode ein, z.B. CH.'
   );
 });
 
