@@ -469,7 +469,7 @@ function CheckoutPage() {
                 shipping={shippingCost}
                 total={grandTotal}
                 shippingMessage={shippingMessage}
-                buttonLabel="Bestellung abschliessen"
+                buttonLabel="Bestellung abschließen"
                 buttonType="submit"
                 buttonDisabled={isSubmitting || !items.length}
                 isSubmitting={isSubmitting}

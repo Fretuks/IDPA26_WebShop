@@ -26,7 +26,7 @@ const authenticatedNavItems = [
   { label: 'Einstellungen', to: '/settings' }
 ];
 
-function Header({ feedback = { type: '', message: '' }, title = 'Produktuebersicht', description, showHero = false }) {
+function Header({ feedback = { type: '', message: '' }, title = 'Produktübersicht', description, showHero = false }) {
   const { count, isCartLoading } = useCart();
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const location = useLocation();

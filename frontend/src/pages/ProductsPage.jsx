@@ -159,7 +159,7 @@ function ProductsPage() {
 
     try {
       await addToCart(product.id, 1);
-      setFeedback({ type: 'success', message: `${product.name} wurde deinem Warenkorb hinzugefuegt.` });
+      setFeedback({ type: 'success', message: `${product.name} wurde deinem Warenkorb hinzugefügt.` });
     } catch (error) {
       setFeedback({ type: 'error', message: error.message });
     } finally {
@@ -171,13 +171,13 @@ function ProductsPage() {
     <div className="min-h-screen">
       <Header
         feedback={feedback}
-        title="Produktuebersicht"
+        title="Produktübersicht"
         description="Entdecke unser Sortiment, kombiniere Suche, Kategorien und Filter und finde schneller passende Produkte."
       />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <section className="space-y-6">
-          <div className="sticky top-4 z-20 rounded-[2rem] border border-slate-200/80 bg-white/95 p-5 shadow-card backdrop-blur">
+          <div className="sticky top-28 z-20 self-start rounded-[2rem] border border-slate-200/80 bg-white/95 p-5 shadow-card backdrop-blur">
             <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                 <div className="space-y-2">
@@ -195,7 +195,7 @@ function ProductsPage() {
                   onClick={handleResetFilters}
                   className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
-                  Filter zuruecksetzen
+                  Filter zurücksetzen
                 </button>
               </div>
 
@@ -206,7 +206,7 @@ function ProductsPage() {
                       <p className="text-sm font-semibold text-ink">Kategorien</p>
                       <p className="mt-1 text-xs text-slate-500">
                         {activeCategoryNames.length
-                          ? `${activeCategoryNames.length} ausgewaehlt`
+                          ? `${activeCategoryNames.length} ausgewählt`
                           : 'Alle Kategorien sichtbar'}
                       </p>
                     </div>
@@ -240,7 +240,7 @@ function ProductsPage() {
                         );
                       })
                     ) : (
-                      <p className="text-sm text-slate-500">Derzeit sind keine Kategorien verfuegbar.</p>
+                      <p className="text-sm text-slate-500">Derzeit sind keine Kategorien verfügbar.</p>
                     )}
                   </div>
                 </div>
@@ -285,7 +285,7 @@ function ProductsPage() {
                         className="mt-1 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand"
                       />
                       <span>
-                        <span className="block font-semibold text-ink">Nur verfuegbare Produkte</span>
+                        <span className="block font-semibold text-ink">Nur verfügbare Produkte</span>
                         <span className="mt-1 block text-sm text-slate-500">
                           Versteckt Artikel ohne Lagerbestand.
                         </span>
@@ -360,7 +360,7 @@ function ProductsPage() {
                     disabled={currentPage === 1}
                     className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Zurueck
+                    Zurück
                   </button>
 
                   {pageNumbers.map((pageNumber) => (

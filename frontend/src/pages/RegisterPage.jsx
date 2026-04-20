@@ -50,7 +50,7 @@ function RegisterPage() {
     }
 
     if (!emailRegex.test(form.email)) {
-      return 'Bitte gib eine gueltige E-Mail-Adresse ein.';
+      return 'Bitte gib eine gültige E-Mail-Adresse ein.';
     }
 
     if (form.password.length < 8) {
@@ -58,7 +58,7 @@ function RegisterPage() {
     }
 
     if (form.password !== form.confirmPassword) {
-      return 'Passwort und Passwortbestaetigung stimmen nicht ueberein.';
+      return 'Passwort und Passwortbestätigung stimmen nicht überein.';
     }
 
     const phoneError = validatePhone(form.phone);
@@ -110,14 +110,14 @@ function RegisterPage() {
 
   return (
     <div className="min-h-screen">
-      <Header title="Konto erstellen" description="Erstelle dein Kundenkonto fuer schnelleren Checkout und einen gespeicherten Warenkorb." />
+      <Header title="Konto erstellen" description="Erstelle dein Kundenkonto für schnelleren Checkout und einen gespeicherten Warenkorb." />
 
       <main className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
         <section className="w-full max-w-2xl rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-card sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Neues Konto</p>
           <h2 className="mt-3 text-3xl font-extrabold text-ink">Konto erstellen</h2>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            Lege dein Kundenkonto an, um Bestellungen schneller abzuschliessen und deinen Warenkorb bequem zu verwalten.
+            Lege dein Kundenkonto an, um Bestellungen schneller abzuschließen und deinen Warenkorb bequem zu verwalten.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -203,7 +203,7 @@ function RegisterPage() {
 
               <div>
                 <label htmlFor="confirmPassword" className="mb-2 block text-sm font-semibold text-slate-700">
-                  Passwort bestaetigen
+                  Passwort bestätigen
                 </label>
                 <input
                   id="confirmPassword"
@@ -319,7 +319,7 @@ function RegisterPage() {
               disabled={isSubmitting}
               className="w-full rounded-2xl bg-ink px-5 py-4 text-sm font-bold text-white transition hover:bg-brand disabled:cursor-not-allowed disabled:bg-slate-300"
             >
-              {isSubmitting ? 'Registrierung laeuft...' : 'Konto erstellen'}
+              {isSubmitting ? 'Registrierung läuft...' : 'Konto erstellen'}
             </button>
           </form>
 

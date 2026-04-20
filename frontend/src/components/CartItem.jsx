@@ -54,7 +54,7 @@ function CartItem({
           disabled={isUpdating || isRemoving}
           className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:bg-white disabled:cursor-not-allowed disabled:bg-slate-100"
         />
-        <p className="mt-2 text-xs text-slate-500">Verfuegbar: {item.stock}</p>
+        <p className="mt-2 text-xs text-slate-500">Verfügbar: {item.stock}</p>
       </div>
 
       <div className="space-y-3">

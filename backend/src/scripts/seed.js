@@ -25,7 +25,7 @@ const productsByCategory = {
     ['Portable SSD 1 TB', 'Externe SSD mit schnellem USB-C Anschluss für unterwegs.', 109.0, 28],
     ['Smartwatch Fitness', 'Alltagstaugliche Smartwatch mit Pulsmessung und Aktivitätstracking.', 179.0, 22],
     ['Webcam Full HD', 'Kompakte Webcam mit klarem Bild für Meetings und Streaming.', 69.9, 35],
-    ['Bluetooth-Lautsprecher', 'Wasserfester Lautsprecher mit kraftvollem Klang für drinnen und draussen.', 89.0, 30],
+    ['Bluetooth-Lautsprecher', 'Wasserfester Lautsprecher mit kraftvollem Klang für drinnen und draußen.', 89.0, 30],
     ['Wireless Charger', 'Schnelles Qi-Ladepad für kompatible Smartphones und Kopfhörer.', 34.9, 45]
   ],
   Bücher: [
@@ -67,7 +67,7 @@ const productsByCategory = {
   Mode: [
     ['Herren Hoodie', 'Bequemer Hoodie aus weicher Baumwollmischung für Alltag und Freizeit.', 49.9, 36],
     ['Damen Strickpullover', 'Leichter Pullover mit angenehmem Tragegefühl für kühlere Tage.', 54.0, 28],
-    ['Sneaker Weiss', 'Vielseitige Alltagssneaker mit bequemer Sohle.', 79.9, 31],
+    ['Sneaker Weiß', 'Vielseitige Alltagssneaker mit bequemer Sohle.', 79.9, 31],
     ['Ledergürtel Braun', 'Klassischer Gürtel mit schlichter Metallschliesse.', 34.5, 46],
     ['Wintermütze', 'Warme Mütze für kalte Tage mit weichem Innenfutter.', 24.0, 42],
     ['Schal aus Wolle', 'Zeitloser Schal für Herbst und Winter.', 39.9, 22],
@@ -104,7 +104,7 @@ const productsByCategory = {
     ['Gartenschere Profi', 'Scharfe Schere für Rosen, Stauden und kleinere Zweige.', 29.9, 34],
     ['Blumenerde 20 L', 'Nährstoffreiche Erde für Balkon, Beet und Topfpflanzen.', 11.5, 80],
     ['Giesskanne 10 L', 'Robuste Giesskanne mit langem Auslauf für gezieltes Bewässern.', 18.9, 28],
-    ['Solar-Gartenleuchte', 'Dekorative Leuchte mit warmweissem Licht für Wege und Terrasse.', 22.0, 46],
+    ['Solar-Gartenleuchte', 'Dekorative Leuchte mit warmweißem Licht für Wege und Terrasse.', 22.0, 46],
     ['Pflanzenset Kräuter', 'Starter-Set mit Basilikum, Petersilie und Schnittlauch.', 15.9, 24],
     ['Handschuhe Gartenarbeit', 'Griffige Handschuhe für Erde, Pflanzen und Werkzeuge.', 9.5, 57],
     ['Schlauchwagen kompakt', 'Praktische Aufbewahrung für Gartenschläuche bis 30 Meter.', 54.0, 12],
@@ -120,7 +120,7 @@ const productsByCategory = {
     ['Whiteboard klein', 'Kompaktes Whiteboard für Notizen, Planung und To-dos.', 29.5, 23],
     ['Aktenordner 5er Set', 'Stabile Ordner für Unterlagen und Dokumente.', 21.0, 44],
     ['Desk Organizer', 'Ordnungssystem für Stifte, Briefe und Kleinteile.', 18.9, 35],
-    ['Papier A4 500 Blatt', 'Weisses Druckerpapier für Alltag und Büro.', 8.5, 110],
+    ['Papier A4 500 Blatt', 'Weißes Druckerpapier für Alltag und Büro.', 8.5, 110],
     ['Tischunterlage Filz', 'Schützt den Schreibtisch und verbessert das Schreibgefühl.', 24.0, 29],
     ['Headset Office', 'Leichtes Headset für Calls und Videokonferenzen.', 47.0, 18]
   ],

@@ -6,14 +6,14 @@ Diese Dokumentation beschreibt den aktuellen technischen Stand des Projekts `IDP
 
 Der Webshop deckt aktuell die wichtigsten E-Commerce-Grundfunktionen ab:
 
-- Produktuebersicht und Produktdetailseiten
-- Kategorien fuer die Produktnavigation
+- Produktübersicht und Produktdetailseiten
+- Kategorien für die Produktnavigation
 - Registrierung und Login mit JWT-basierter Authentifizierung
-- Persistenter Warenkorb ueber die Backend-API
+- Persistenter Warenkorb über die Backend-API
 - Checkout mit Liefer- und Rechnungsadresse
 - Verwaltung des eigenen Profils und gespeicherter Adressen
 - Bestellanlage mit mehreren Zahlungsarten
-- Vorbereitete Admin-Endpunkte fuer Produkte, Kategorien und Bestellungen
+- Vorbereitete Admin-Endpunkte für Produkte, Kategorien und Bestellungen
 
 ## Repository-Struktur
 
@@ -37,7 +37,7 @@ Das Frontend liegt in `frontend/` und basiert auf React 18, React Router und Vit
 
 Aktuelle Seiten:
 
-- `/` Uebersichtsseite
+- `/` Übersichtsseite
 - `/products` Produktliste
 - `/products/:id` Produktdetail
 - `/cart` Warenkorb
@@ -98,7 +98,7 @@ VITE_API_BASE_URL=http://localhost:3000
 
 Lokales Setup:
 
-1. Abhaengigkeiten in `backend/` und `frontend/` installieren
+1. Abhängigkeiten in `backend/` und `frontend/` installieren
 2. PostgreSQL-Datenbank `webshop_db` erstellen
 3. Datenbankschema aus `backend/sql/schema.sql` importieren
 4. Optional Demo-Daten mit `npm run seed` im Backend laden
@@ -113,7 +113,7 @@ Standard-URLs lokal:
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:3000`
 
-## Verfuegbare Skripte
+## Verfügbare Skripte
 
 Backend:
 
@@ -130,4 +130,4 @@ Frontend:
 
 ## Hinweise zum Dokumentationsstand
 
-Der Ordner `documentation/` enthaelt aktuell nur dieses README. Aeltere Verweise auf weitere Dateien wie `ERD.md` oder `postman_examples.md` entsprechen im aktuellen Repository-Stand nicht mehr dem tatsaechlich vorhandenen Inhalt.
+Der Ordner `documentation/` enthält aktuell nur dieses README. Ältere Verweise auf weitere Dateien wie `ERD.md` oder `postman_examples.md` entsprechen im aktuellen Repository-Stand nicht mehr dem tatsächlich vorhandenen Inhalt.
