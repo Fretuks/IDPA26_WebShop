@@ -57,7 +57,7 @@ function Header({ feedback = { type: '', message: '' }, title = 'Produktübersic
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+    <header className="border-b border-slate-200/70 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <Link to="/" className="flex items-center gap-3">
