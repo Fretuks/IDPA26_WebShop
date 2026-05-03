@@ -15,7 +15,7 @@ const defaultCategoryDraft = {
   description: ''
 };
 
-const validSections = new Set(['dashboard', 'products', 'categories', 'orders', 'users', 'settings']);
+const validSections = new Set(['dashboard', 'products', 'categories', 'orders', 'users']);
 
 const productSortOptions = [
   { value: 'name-asc', label: 'Name A-Z' },
@@ -524,16 +524,6 @@ function AdminPage() {
         return <OrderTable orders={orders} onStatusChange={handleOrderStatusChange} savingOrderId={savingOrderId} />;
       case 'users':
         return <UserTable users={users} currentUserId={user?.id} onRoleChange={handleUserRoleChange} savingUserId={savingUserId} />;
-      case 'settings':
-        return (
-          <div className="rounded-[1.75rem] border border-slate-200/80 bg-white p-6 shadow-card">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand">Einstellungen</p>
-            <h3 className="mt-2 text-2xl font-extrabold text-ink">Admin Hinweise</h3>
-            <p className="mt-4 text-sm leading-6 text-slate-600">
-              Rollenänderungen und weitere Systemkonfigurationen sind im aktuellen Backend nicht exponiert. Das Panel nutzt nur reale, verfügbare API-Funktionen.
-            </p>
-          </div>
-        );
       case 'dashboard':
       default:
         return renderDashboard();

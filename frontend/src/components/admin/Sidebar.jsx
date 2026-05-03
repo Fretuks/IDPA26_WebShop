@@ -3,8 +3,7 @@ const navigationItems = [
   { key: 'products', label: 'Produkte' },
   { key: 'categories', label: 'Kategorien' },
   { key: 'orders', label: 'Bestellungen' },
-  { key: 'users', label: 'Benutzer' },
-  { key: 'settings', label: 'Einstellungen' }
+  { key: 'users', label: 'Benutzer' }
 ];
 
 function Sidebar({ activeSection, onSelect }) {
